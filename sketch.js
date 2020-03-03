@@ -1,4 +1,5 @@
 let stars = []; // Array of star objects
+let speedChange = 1; // Default speed is 1 
 
 // Variable containing the colors of the stars
 let myColor = {
@@ -7,12 +8,12 @@ let myColor = {
     b: 255
 };
 
-
-
 function setup(){
     createCanvas(800, 800);
     background('black');
 
+
+    // Start of with 3 stars
     for(let i = 0; i < 3 ; i++){
         stars.push(new star());
     }
@@ -21,13 +22,29 @@ function setup(){
 
 function draw(){  
     //background('black');
-    
+
+    // Increase Speed 
+    if(keyIsDown(UP_ARROW)){
+        speedChange += 0.1;
+
+        if(speedChange > 10){
+            speedChange = 10;
+        }
+    }
+    // Decrease Speed
+    else if(keyIsDown(DOWN_ARROW)){
+        speedChange -= 0.1;
+
+        if(speedChange < 1){
+            speedChange = 1;
+        }
+    }
+
+    // Draw and move every star
     for(let i = 0; i < stars.length ; i++){
         stars[i].show();
         stars[i].move();
     }
-
-    
 }
 
 
@@ -39,6 +56,7 @@ class star {
         this.scale = .1;
         this.xVel = randVel();
         this.yVel = randVel();
+        this.alpha = 0;
     }
 
     show(){
@@ -46,17 +64,19 @@ class star {
     }
 
     move(){
-        this.xPos += this.xVel;
-        this.yPos += this.yVel;
-        this.scale += .01;
+        this.xPos += this.xVel * speedChange;
+        this.yPos += this.yVel * speedChange;
+        this.scale += 0.01 * speedChange;
+        this.alpha += 0.01;
 
         // Reset Stars
         if(Math.round(this.scale) == 3){
             this.xPos = 800 / 2;
             this.yPos = 800 / 2;
             this.scale = .1;
-            this.xVel = randVel();
+            this.xVel = randVel() ;
             this.yVel = randVel();
+            this.alpha = 0;
         }
     }
 }
@@ -95,7 +115,6 @@ function randVel(){
 /* When mouse is pressed create a new star */
 function mousePressed(){
     stars.push(new star(color(myColor.r, myColor.g, myColor.b)));
-    //save('myCanvas.jpg');
 }
 
 /* When mouse is dragged change colors */
@@ -103,4 +122,11 @@ function mouseDragged(){
     myColor.r = random(0,255);
     myColor.g = random(0,255);
     myColor.b = random(0,255);
+}
+
+// If S key is pressed save Image
+function keyPressed() {  
+    if(keyCode == 83){
+        save('myCanvas.jpg');
+    }
 }
